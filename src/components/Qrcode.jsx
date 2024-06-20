@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
 function Qrcode() {
@@ -12,57 +12,61 @@ function Qrcode() {
     URL: "",
   });
   const [businessCardList, setBusinessCardList] = useState([]);
-  const [selectedBusinessCard, setSelectedBusinessCard] = useState(null);
-
+  const [selectedBusinessCard, setSelectedBusinessCard] = useState({
+    id: "",
+    Name: "",
+    Company: "",
+    Phone: "",
+    Email: "",
+    URL: "",
+  });
   const handlebusinessCard = (event) => {
     setBusinessCard({
+      ...businessCard,
       id: Math.ceil(Math.random() * 10000),
-      [event.target.Name]: event.target.value,
-      [event.target.Company]: event.target.value,
-      [event.target.Phone]: event.target.value,
-      [event.target.Email]: event.target.value,
-      [event.target.URL]: event.target.value,
+      [event.target.name]: event.target.value,
     });
   };
-  const handlebusinessCardList = (event) => {
+  const handleBusinessCardList = (event) => {
     event.preventDefault();
+    setBusinessCardList([...businessCardList, businessCard]);
+  };
+  useEffect(() => {
+    if (selectedBusinessCard.URL !== "") {
+      setSelectedBusinessCard(businessCardList[businessCardList.length - 1]);
+    } else {
+      setSelectedBusinessCard({ ...businessCard, URL: businessCard.URL });
+    }
     if (
+      businessCard !=
       {
-        [event.target.Name]: "",
-        [event.target.Company]: "",
-        [event.target.Phone]: "",
-        [event.target.Email]: "",
-        [event.target.URL]: "",
+        id: "",
+        Name: "",
+        Company: "",
+        Phone: "",
+        Email: "",
+        URL: "",
       }
     ) {
-      setBusinessCardList(businessCardList);
+      setBusinessCard({
+        id: "",
+        Name: "",
+        Company: "",
+        Phone: "",
+        Email: "",
+        URL: "",
+      });
     }
-    setBusinessCardList([...businessCardList, businessCard]);
-    setbusinessCard({
-      Name: "",
-      Company: "",
-      Phone: "",
-      Email: "",
-      URL: "",
-    });
+  }, [businessCardList]);
+  const handleDisplayQr = (id) => {
+    const filteredBusinessCard = businessCardList.find(
+      (Card) => Card.id === id
+    );
+    setSelectedBusinessCard(filteredBusinessCard);
   };
-
-  const updateSelectedBusinessCard = () => {
-    setSelectedBusinessCard(businessCardList[businessCardList.length - 1]);
-  };
-
-  const handleDisplayQr = (event, id) => {
-    if (event.target.className === "generateQRCode") {
-      const filteredBusinessCard = businessCardList.find(
-        (Card) => Card.id === id
-      );
-      setSelectedBusinessCard(filteredBusinessCard);
-    }
-  };
-
   return (
     <div>
-      <form onSubmit={handlebusinessCardList}>
+      <form onSubmit={(event) => handleBusinessCardList(event)}>
         <label htmlFor="Name">Name</label>
         <input
           onChange={handlebusinessCard}
@@ -108,11 +112,20 @@ function Qrcode() {
           placeholder="Enter URL here"
           value={businessCard.URL}
         />
-        <button id="generateQR" onClick={() => updateSelectedBusinessCard()}>
+        <button id="generateQR" type="submit">
           Generate QR Code
         </button>
       </form>
-      <div>{urlList && <QRCodeSVG value={selectedBusinessCard.URL} />} </div>
+      <div>
+        {selectedBusinessCard.URL !== "" ? (
+          <div>
+            <QRCodeSVG value={selectedBusinessCard.URL} />
+            URL: {selectedBusinessCard.URL}
+          </div>
+        ) : (
+          <div>nothing found</div>
+        )}{" "}
+      </div>
       <ol>
         {businessCardList &&
           businessCardList.map((businessCardItem) => {
@@ -124,8 +137,7 @@ function Qrcode() {
                 <p>{businessCardItem.Email}</p>
                 <p>{businessCardItem.URL}</p>
                 <button
-                  onClick={(event) => handleDisplayQr(event)}
-                  className="generateQRCode"
+                  onClick={() => handleDisplayQr(businessCardItem.id)}
                   key={businessCardItem.id}
                 >
                   Display QR
