@@ -11,7 +11,9 @@ function Qrcode() {
     Email: "",
     URL: "",
   });
-  const [businessCardList, setBusinessCardList] = useState([]);
+  let [businessCardList, setBusinessCardList] = useState(
+    JSON.parse(localStorage.getItem("businessCardList")) || []
+  );
   const [selectedBusinessCard, setSelectedBusinessCard] = useState({
     id: "",
     Name: "",
@@ -58,6 +60,31 @@ function Qrcode() {
       });
     }
   }, [businessCardList]);
+
+  useEffect(() => {
+    const storageList = localStorage.getItem("businessCardList");
+    if (storageList) {
+      setBusinessCardList(JSON.parse(storageList));
+      console.log(businessCardList);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("businessCardList", JSON.stringify(businessCardList));
+  }, [businessCardList]);
+  // useEffect(() => {
+  //   const itemsFromLocalStorage = localStorage.getItem("items");
+  //   if (itemsFromLocalStorage) {
+  //     const parsedItemsFromLocalStorage = JSON.parse(itemsFromLocalStorage);
+  //     setItems(parsedItemsFromLocalStorage);
+  //     console.log(items);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   localStorage.setItem("items", JSON.stringify(items));
+  // }, [items]);
+
   const handleDisplayQr = (id) => {
     const filteredBusinessCard = businessCardList.find(
       (Card) => Card.id === id
@@ -123,7 +150,7 @@ function Qrcode() {
             URL: {selectedBusinessCard.URL}
           </div>
         ) : (
-          <div>nothing found</div>
+          <div>Please fill the form above to generate a QR code</div>
         )}{" "}
       </div>
       <ol>
