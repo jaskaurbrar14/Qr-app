@@ -72,18 +72,6 @@ function Qrcode() {
   useEffect(() => {
     localStorage.setItem("businessCardList", JSON.stringify(businessCardList));
   }, [businessCardList]);
-  // useEffect(() => {
-  //   const itemsFromLocalStorage = localStorage.getItem("items");
-  //   if (itemsFromLocalStorage) {
-  //     const parsedItemsFromLocalStorage = JSON.parse(itemsFromLocalStorage);
-  //     setItems(parsedItemsFromLocalStorage);
-  //     console.log(items);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   localStorage.setItem("items", JSON.stringify(items));
-  // }, [items]);
 
   const handleDisplayQr = (id) => {
     const filteredBusinessCard = businessCardList.find(
